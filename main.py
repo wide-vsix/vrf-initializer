@@ -43,7 +43,7 @@ def join_if_to_vrf(if_name, vrf_name):
     return is_joined_successfully 
 
 
-def main():
+def main(config):
     vrfs = config["vrfs"]
     interfaces = config["interfaces"]
 
@@ -103,10 +103,10 @@ if __name__ == "__main__":
     with open(args.file, "r") as f:
         config = json.load(f)
 
-    main(config=config,args=args)
+    main(config=config)
     # daemon mode
     if args.daemon:
         print("[Info]: go to next cycle.")
         print(f"[Info]: sleeping {args.timeout}")
         time.sleep(args.timeout)
-        main(config=config,args=args)
+        main(config=config)
