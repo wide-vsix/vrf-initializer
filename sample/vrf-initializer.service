@@ -4,9 +4,9 @@ Before=network-pre.target
 Requires=network-pre.target kamuee.service
 
 [Service]
-Type=oneshot
+Type=simple
 RemainAfterExit=yes
-ExecStart=/bin/sh -ec '/opt/vrf-initializer/main.py -f /opt/vrf-initializer/config.json -e -t 5'
-ExecStop=/bin/sh -ec '/opt/vrf-initializer/delete.py -f /opt/vrf-initializer/config.json'
+ExecStart=/opt/vrf-initializer/main.py -f /opt/vrf-initializer/config.json -e -t 5
+ExecStop=/opt/vrf-initializer/delete.py -f /opt/vrf-initializer/config.json
 [Install]
 WantedBy=multi-user.target

@@ -43,18 +43,7 @@ def join_if_to_vrf(if_name, vrf_name):
     return is_joined_successfully 
 
 
-if __name__ == "__main__":
-    # Parse args
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-e",'--eternally', help="Exec eternally. default: False", default=False, action='store_true')
-    parser.add_argument("-t",'--timeout', help="Timeout if failed dualing execing eternally. default: 10",default=10, type=int)
-    parser.add_argument("-f",'--file', help="Config file. default: ./config.json", default="./config.json", type=str)
-
-    args = parser.parse_args()
-
-    # Parse config
-    with open(args.file, "r") as f:
-        config = json.load(f)
+def main():
     vrfs = config["vrfs"]
     interfaces = config["interfaces"]
 
@@ -74,35 +63,50 @@ if __name__ == "__main__":
 
     # Join interface
     interface_all_joined = False
-
-    while not interface_all_joined:
-        for interface in interfaces:
-            # check exists of interface and vrf.
-            if_exists = check_if(interface["name"])
-            vrf_exists = check_if(interface["vrf"])
-            
-            if not vrf_exists:
-                print(f"[Error]: vrf: {interface['vrf']} does not exists.  ", file=sys.stderr)
-                print("[Error]: Abort ", file=sys.stderr)
-                sys.exit(1)
-            if not if_exists:
-                print(f"[Warning]: Interface: {interface['name']} is not found. skipping", file=sys.stderr)
-                break
-            # join
-            is_joined_successfully = join_if_to_vrf(interface["name"], interface["vrf"])
-            if is_joined_successfully:
-                print(f"[Info]: Joined if:{interface['name']} to vrf:{interface['vrf']} ")
-        else:
-            # 一度もbreakせずに完遂
-            interface_all_joined = True
-            break
-        # 途中でbreakされた場合
-        if args.eternally:
-            print(f"[Info]: Retry after {args.timeout} sec.")
-            time.sleep(args.timeout)
-        else:
+    for interface in interfaces:
+        # check exists of interface and vrf.
+        if_exists = check_if(interface["name"])
+        vrf_exists = check_if(interface["vrf"])
+        
+        if not vrf_exists:
+            print(f"[Error]: vrf: {interface['vrf']} does not exists.  ", file=sys.stderr)
             print("[Error]: Abort ", file=sys.stderr)
             sys.exit(1)
-    
-    print("[Info]: Completed ")
-    sys.exit(0)
+        if not if_exists:
+            print(f"[Warning]: Interface: {interface['name']} is not found. skipping", file=sys.stderr)
+            break
+        # join
+        is_joined_successfully = join_if_to_vrf(interface["name"], interface["vrf"])
+        if is_joined_successfully:
+            print(f"[Info]: Joined if:{interface['name']} to vrf:{interface['vrf']} ")
+    else:
+        # 一度もbreakせずに完遂
+        interface_all_joined = True
+
+    if interface_all_joined:
+        print("[Info]: Completed. All interfaces join to their vrf")
+    else:
+        print("[Warning]: All interfaces don't join to their vrf", file=sys.stderr)
+
+
+
+if __name__ == "__main__":
+    # Parse args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d",'--daemon', help="Daemon mode. Exec eternally default: False", default=False, action='store_true')
+    parser.add_argument("-t",'--timeout', help="Timeout seconds is enabled only in daemon mode. (Otherwise, it is ignored). default: 10",default=10, type=int)
+    parser.add_argument("-f",'--file', help="Config file. default: ./config.json", default="./config.json", type=str)
+
+    args = parser.parse_args()
+
+    # Parse config
+    with open(args.file, "r") as f:
+        config = json.load(f)
+
+    main(config=config,args=args)
+    # daemon mode
+    if args.daemon:
+        print("[Info]: go to next cycle.")
+        print(f"[Info]: sleeping {args.timeout}")
+        time.sleep(args.timeout)
+        main(config=config,args=args)
