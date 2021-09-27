@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # Parse config
     with open(args.file, "r") as f:
         config = json.load(f)
-    vrfs = config["vrf"]
+    vrfs = config["vrfs"]
     interfaces = config["interfaces"]
 
 
