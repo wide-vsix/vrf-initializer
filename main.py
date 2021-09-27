@@ -111,12 +111,9 @@ if __name__ == "__main__":
     
     while args.daemon:
         print("[Info]: go to next cycle.")
-        print(f"[Info]: sleeping {args.timeout}")
 
-        if not interface_all_joined:
-            # 前回のがうまく行ったので5倍待つか...
-            time.sleep(args.timeout*5)
-        else:
-            # 失敗した時は引数通り
-            time.sleep(args.timeout)
+        # 前回のがうまく行ったので5倍待つか...
+        timeout =  args.timeout * 5 if interface_all_joined else args.timeout
+        print(f"[Info]: sleeping {timeout} sec.")
+        time.sleep(timeout)
         main(config=config)
