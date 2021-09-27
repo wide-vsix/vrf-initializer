@@ -115,4 +115,7 @@ if __name__ == "__main__":
         if not interface_all_joined:
             # 前回のがうまく行ったので5倍待つか...
             time.sleep(args.timeout*5)
+        else:
+            # 失敗した時は引数通り
+            time.sleep(args.timeout)
         main(config=config)
