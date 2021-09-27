@@ -87,6 +87,8 @@ def main(config):
         print("[Info]: Completed. All interfaces join to their vrf")
     else:
         print("[Warning]: All interfaces don't join to their vrf", file=sys.stderr)
+    
+    return interface_all_joined
 
 
 
@@ -103,11 +105,14 @@ if __name__ == "__main__":
     with open(args.file, "r") as f:
         config = json.load(f)
 
-    main(config=config)
-    
+    interface_all_joined = main(config=config)
+
     # daemon mode
     if args.daemon:
         print("[Info]: go to next cycle.")
         print(f"[Info]: sleeping {args.timeout}")
-        time.sleep(args.timeout)
+
+        if not interface_all_joined:
+            # 前回のがうまく行ったので5倍待つか...
+            time.sleep(args.timeout*5)
         main(config=config)
