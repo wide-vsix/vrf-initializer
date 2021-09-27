@@ -104,6 +104,7 @@ if __name__ == "__main__":
         config = json.load(f)
 
     main(config=config)
+    
     # daemon mode
     if args.daemon:
         print("[Info]: go to next cycle.")
