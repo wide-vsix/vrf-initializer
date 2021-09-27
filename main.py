@@ -43,7 +43,7 @@ def join_if_to_vrf(if_name, vrf_name):
     return is_joined_successfully 
 
 
-def main():
+def main(config):
     vrfs = config["vrfs"]
     interfaces = config["interfaces"]
 
@@ -109,4 +109,4 @@ if __name__ == "__main__":
         print("[Info]: go to next cycle.")
         print(f"[Info]: sleeping {args.timeout}")
         time.sleep(args.timeout)
-        main(config=config,args=args)
+        main(config=config)
