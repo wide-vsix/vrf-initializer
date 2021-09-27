@@ -103,7 +103,8 @@ if __name__ == "__main__":
     with open(args.file, "r") as f:
         config = json.load(f)
 
-    main(config=config,args=args)
+    main(config=config)
+    
     # daemon mode
     if args.daemon:
         print("[Info]: go to next cycle.")
