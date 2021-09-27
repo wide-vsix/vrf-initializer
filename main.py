@@ -108,7 +108,8 @@ if __name__ == "__main__":
     interface_all_joined = main(config=config)
 
     # daemon mode
-    if args.daemon:
+    
+    while args.daemon:
         print("[Info]: go to next cycle.")
         print(f"[Info]: sleeping {args.timeout}")
 
