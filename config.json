@@ -1,0 +1,26 @@
+{
+    "interfaces": [
+        {
+            "name": "port-3b-0-0",
+            "vrf": "WIDE"
+        },
+        {
+            "name": "port-3b-0-1",
+            "vrf": "WIDE"
+        },
+        {
+            "name": "port-86-0-0",
+            "vrf": "WIDE"
+        },
+        {
+            "name": "port-86-0-1",
+            "vrf": "WIDE"
+        }
+    ],
+    "vrfs": [
+        {
+            "name": "WIDE",
+            "id": "2500"
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+[Unit]
+Description=Kamuee VRF creation
+Before=network-pre.target
+Requires=network-pre.target kamuee.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -ec '/opt/kamuee-vrf-initializer/main.py -f config.json -e -t 5'
+ExecStop=/bin/sh -ec 'opt/kamuee-vrf-initializer/delete.py -f config.json'
+[Install]
+WantedBy=multi-user.target
