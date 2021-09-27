@@ -23,3 +23,5 @@ optional arguments:
 
 ## 使い方
 `sample/vrf-initializer.service` を参照．
+
+作ったVRF消したい時は`delete.py`を実行するべし．
