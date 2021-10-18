@@ -1,6 +1,7 @@
 [Unit]
-Description=VRF creation
+Description=Kamuee VRF creation
 Before=network-pre.target
+Requires=network-pre.target kamuee.service
 
 [Service]
 Type=simple
