@@ -1,7 +1,7 @@
 # vrf-initializer
 
-VRFを作成, interfaceへの割当を行うスクリプト．
-daemon modeを有効にすると常時監視する． 
+Scripts for creating VRFs and assigning interfaces.
+When daemon mode is enabled, it constantly monitors the status of interfaces. 
 
 
 
@@ -15,13 +15,14 @@ optional arguments:
                         Timeout seconds is enabled only in daemon mode. (Otherwise, it is ignored). default: 10
   -f FILE, --file FILE  Config file. default: ./config.json
 ```
+## Requirements
+Linux only
+- iproute2
+- vrf modeule
 
-## ユースケース
-`/etc/networkd-dispatcher/routable.d/` が使えない場合に効果的．
-主にnetworkdでhook出来ないInterfaceにVRFをつけたい場合など．
 
-
-## 使い方
-`sample/vrf-initializer.service` を参照．
-
-作ったVRF消したい時は`delete.py`を実行するべし．
+## How to deploy
+### systemd 
+see `sample/vrf-initializer.service`
+### docker
+see `docker-compose.yml`
