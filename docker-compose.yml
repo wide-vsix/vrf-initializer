@@ -1,0 +1,11 @@
+version: '3'
+services:
+  vrf-initializer:
+    restart: unless-stopped
+    build: "./"
+    network_mode: host
+    privileged: true
+    environment:
+      VRF_INITIALIZER_TIMEOUT: 5
+    volumes:
+    - ./config.json:/vrf-initializer/config.json
