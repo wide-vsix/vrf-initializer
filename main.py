@@ -8,7 +8,7 @@ import json
 
 def create_vrf(vrf_name, vrf_id):
 
-    is_created_vrf=False
+    is_created_vrf = False
     create_commands = [
         f"ip link add {vrf_name} type vrf table {vrf_id}",
         f"ip link set up {vrf_name}",
@@ -18,35 +18,41 @@ def create_vrf(vrf_name, vrf_id):
     ]
     for command in create_commands:
         try:
-            subprocess.run(command,shell=True,check=True,stdout=subprocess.DEVNULL)
-        except:
+            subprocess.run(command, shell=True, check=True,
+                           stdout=subprocess.DEVNULL)
+        except Exception as e:
             print(f"[Error]: Can not create vrf {vrf_name}", file=sys.stderr)
+            print(f"{e}", file=sys.stderr)
             break
     else:
-        is_created_vrf=True
+        is_created_vrf = True
     return is_created_vrf
 
+
 def check_if(if_name):
-    if_exists = (subprocess.run(f'ip link show {if_name}',shell=True,stdout=subprocess.DEVNULL).returncode == 0)
+    if_exists = (subprocess.run(
+        f'ip link show {if_name}', shell=True, stdout=subprocess.DEVNULL).returncode == 0)
     return if_exists
+
 
 def join_if_to_vrf(if_name, vrf_name):
     command = f"ip link set {if_name} master {vrf_name}"
     is_joined_successfully = False
 
     try:
-        subprocess.run(command,shell=True,check=True,stdout=subprocess.DEVNULL)
+        subprocess.run(command, shell=True, check=True,
+                       stdout=subprocess.DEVNULL)
         is_joined_successfully = True
-    except:
+    except Exception as e:
         print(f"[Error]: Can not create vrf {vrf_name}", file=sys.stderr)
-    
-    return is_joined_successfully 
+        print(f"{e}", file=sys.stderr)
+
+    return is_joined_successfully
 
 
 def main(config):
     vrfs = config["vrfs"]
     interfaces = config["interfaces"]
-
 
     # Check VRF exists
     for vrf in vrfs:
@@ -54,7 +60,7 @@ def main(config):
             print(f"[Info]: {vrf} is found. skip.")
         else:
             print(f"{vrf} is not found. creating...")
-            is_created_successfully = create_vrf(vrf["name"],vrf["id"])
+            is_created_successfully = create_vrf(vrf["name"], vrf["id"])
             if not is_created_successfully:
                 print("[Error]: Abort ", file=sys.stderr)
                 sys.exit(1)
@@ -67,18 +73,22 @@ def main(config):
         # check exists of interface and vrf.
         if_exists = check_if(interface["name"])
         vrf_exists = check_if(interface["vrf"])
-        
+
         if not vrf_exists:
-            print(f"[Error]: vrf: {interface['vrf']} does not exists.  ", file=sys.stderr)
+            print(
+                f"[Error]: vrf: {interface['vrf']} does not exists.  ", file=sys.stderr)
             print("[Error]: Abort ", file=sys.stderr)
             sys.exit(1)
         if not if_exists:
-            print(f"[Warning]: Interface: {interface['name']} is not found. skipping", file=sys.stderr)
+            print(
+                f"[Warning]: Interface: {interface['name']} is not found. skipping", file=sys.stderr)
             break
         # join
-        is_joined_successfully = join_if_to_vrf(interface["name"], interface["vrf"])
+        is_joined_successfully = join_if_to_vrf(
+            interface["name"], interface["vrf"])
         if is_joined_successfully:
-            print(f"[Info]: Joined if:{interface['name']} to vrf:{interface['vrf']} ")
+            print(
+                f"[Info]: Joined if:{interface['name']} to vrf:{interface['vrf']} ")
     else:
         # 一度もbreakせずに完遂
         interface_all_joined = True
@@ -87,17 +97,19 @@ def main(config):
         print("[Info]: Completed. All interfaces join to their vrf")
     else:
         print("[Warning]: All interfaces don't join to their vrf", file=sys.stderr)
-    
-    return interface_all_joined
 
+    return interface_all_joined
 
 
 if __name__ == "__main__":
     # Parse args
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d",'--daemon', help="Daemon mode. Exec eternally default: False", default=False, action='store_true')
-    parser.add_argument("-t",'--timeout', help="Timeout seconds is enabled only in daemon mode. (Otherwise, it is ignored). default: 10",default=10, type=int)
-    parser.add_argument("-f",'--file', help="Config file. default: ./config.json", default="./config.json", type=str)
+    parser.add_argument("-d", '--daemon', help="Daemon mode. Exec eternally default: False",
+                        default=False, action='store_true')
+    parser.add_argument(
+        "-t", '--timeout', help="Timeout seconds is enabled only in daemon mode. (Otherwise, it is ignored). default: 10", default=10, type=int)
+    parser.add_argument(
+        "-f", '--file', help="Config file. default: ./config.json", default="./config.json", type=str)
 
     args = parser.parse_args()
 
@@ -108,12 +120,12 @@ if __name__ == "__main__":
     interface_all_joined = main(config=config)
 
     # daemon mode
-    
+
     while args.daemon:
         print("[Info]: go to next cycle.")
 
         # 前回のがうまく行ったので5倍待つか...
-        timeout =  args.timeout * 5 if interface_all_joined else args.timeout
+        timeout = args.timeout * 5 if interface_all_joined else args.timeout
         print(f"[Info]: sleeping {timeout} sec.")
         time.sleep(timeout)
         main(config=config)
